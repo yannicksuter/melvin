@@ -102,28 +102,43 @@ void loop() {
       go();
     } else {
       int a = getBestAngle();
+//      int dir = a<0?RIGHT:LEFT;
       int dir = a<0?LEFT:RIGHT;
-      turn(dir, abs(a));
-      delay(200);
-      radar.write(95);
+      
+      DEBUG_PRINT("a:");
+      DEBUG_PRINT(a);
+      DEBUG_PRINT(" dir:");
+      DEBUG_PRINT(dir);
+      
+      turn(dir, abs(a)*3);
     }
     delay(MIN_DELAY);      
   }
 }
 
 int getBestAngle() {
-  int dist = 0;
+  // set start position
+  radar.write(0);
+  delay(220);
+
+  // start scan  
+  float dist = 0;
   int angle = 0;
-  int distMax = 0;
-  for (int a=0;a<180;a+=10) {
+  float distMax = 0;
+  for (int a=0;a<180;a+=15) {
     radar.write(a);
-    int dist = getDistance();
+    dist = getDistance();
     if (dist > distMax) {
       angle = a;
       distMax = dist;
     }
     delay(30);      
   }
+  
+  // reset position
+  radar.write(95);
+  delay(220);
+  
   return angle-90;
 }
 
@@ -163,8 +178,9 @@ void turn(int dir, int angle) {
     programm = PROG_TURN;
   }
   
-  if (angle > 0) {    
-    delay(220*(angle/60.0));
+  if (angle > 0) {
+//    delay(220.0*((float)angle/60.0));
+    delay(230.0*((float)angle/60.0));
     stop();
   }    
 }
